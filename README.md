@@ -35,7 +35,8 @@ py -3.12 infer.py --model weights/best.pt --source videos/test.mp4 --output outp
 *   **场景说明**：视频拍摄了机器人的装甲板，画面包含了多个角度的装甲板目标，用于验证模型在真实场景下的检测和关键点回归能力。
 ```
 ## 6. 结果展示
-![推理结果截图](./demo.png)
+<img width="1226" height="826" alt="demo" src="https://github.com/user-attachments/assets/94e569f2-1532-4e92-a52a-739cf72c59a5" />
+
 *图注：检测到装甲板，显示类别 B3，置信度 0.70 / 0.54，且红色、黄色、蓝色、绿色4个关键点清晰标出。*
 
 ## 7. 实际识别表现、遇到的问题及处理方法
