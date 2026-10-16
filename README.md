@@ -21,3 +21,11 @@
 **依赖安装步骤：**
 ```bash
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+**实际运行命令：**
+```bash
+# 默认使用默认路径
+py -3.12 infer.py
+
+# 或者通过命令行参数指定路径（模型路径、视频路径、输出位置均可自定义）
+py -3.12 infer.py --model weights/best.pt --source videos/test.mp4 --output output/result.avi
