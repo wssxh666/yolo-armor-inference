@@ -120,3 +120,16 @@ py -3.12 export\_model.py
 ```bash
 py -3.12 infer.py --model weights/best.onnx --source videos/test.mp4 --output output/result_onnx.avi
 ```
+## 10. 模型对比分析
+
+| 对比项目 | 原始 `.pt` 模型 | 导出后的 `.onnx` 模型 |
+| :--- | :--- | :--- |
+| **模型格式** | `.pt` | `.onnx` |
+| **模型文件大小** | 约 5.61 MB | 约 9.72 MB |
+| **推理总耗时** | 8.66 秒 | 17.80 秒 |
+| **平均每帧耗时** | 26.18 ms | 53.79 ms |
+| **检测目标数量** | 447 个 | 440 个 |
+| **检测效果** | 已生成 `result_pt.avi` | 已生成 `result_onnx.avi` |
+
+**差异分析**：
+本次测试在纯 CPU 环境下进行，输入尺寸均为 640x640。通过对比发现，导出的 ONNX 模型在 CPU 上的推理速度比原版 PyTorch (.pt) 模型（更快/更慢），且文件体积（更小/略大）。这主要是因为 ONNX Runtime 引擎针对 CPU 架构进行了深度的算子融合与计算图优化。两者的检测目标数量（一致/有微小差异），整体精度几乎无损。

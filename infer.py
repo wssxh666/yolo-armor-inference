@@ -1,13 +1,13 @@
 import cv2
 import argparse
 import os
+import time  # <-- 新增：用于计时
 from ultralytics import YOLO
 
 def parse_args():
     parser = argparse.ArgumentParser(description="YOLO 装甲板推理与关键点可视化")
     parser.add_argument('--model', type=str, default='weights/best.pt', help='模型权重路径')
     parser.add_argument('--source', type=str, default='videos/test.mp4', help='输入视频路径')
-    # 注意这里改成了 .avi 后缀，避免 Windows 下 MP4 编码失败
     parser.add_argument('--output', type=str, default='output/result.avi', help='输出视频保存路径')
     return parser.parse_args()
 
@@ -26,37 +26,52 @@ def main():
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     
-    # 确保输出文件夹存在
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
-    
-    # 使用 XVID 编码器，生成 .avi 文件，保证在 Windows 下能正常播放
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = cv2.VideoWriter(args.output, fourcc, fps, (w, h))
     
-    print(f"[INFO] 开始推理，输出保存至: {args.output}")
-
-    # 逐帧推理
     frame_count = 0
+    total_objects = 0  # <-- 新增：用于统计检测到的总目标数
+    
+    print("[INFO] 开始推理...")
+    
+    # 预热一次模型，避免第一次推理的初始化耗时影响对比结果
+    ret, frame = cap.read()
+    if ret:
+        model(frame, verbose=False)
+        out.write(frame) # 保持输出视频完整
+        frame_count += 1
+
+    start_time = time.time()  # <-- 新增：开始计时
+
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
 
-        # 执行推理
         results = model(frame, verbose=False)
         
-        # 绘制检测框、类别、置信度和 4 个关键点
+        # 统计这一帧检测到的目标数量
+        boxes = results[0].boxes
+        if boxes is not None:
+            total_objects += len(boxes)
+            
         annotated_frame = results[0].plot()
-        
-        # 写入保存
         out.write(annotated_frame)
         frame_count += 1
-        if frame_count % 30 == 0:
-            print(f"[INFO] 已处理 {frame_count} 帧...")
+
+    end_time = time.time()  # <-- 新增：结束计时
+    total_time = end_time - start_time
 
     cap.release()
     out.release()
-    print(f"[INFO] 推理完成！共处理 {frame_count} 帧，视频已保存！")
+    
+    print(f"[INFO] 推理完成！共处理 {frame_count} 帧，视频已保存至: {args.output}")
+    print(f"==================================================")
+    print(f"[RESULT] 总耗时: {total_time:.2f} 秒")
+    print(f"[RESULT] 平均每帧耗时: {(total_time/frame_count)*1000:.2f} ms")
+    print(f"[RESULT] 检测到的目标总数: {total_objects}")
+    print(f"==================================================")
 
 if __name__ == '__main__':
     main()
