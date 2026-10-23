@@ -36,6 +36,7 @@
 
 *   **放置位置**：请在项目根目录下新建 `weights` 文件夹，将 `best.pt` 放置在 `weights/` 目录下，即 `weights/best.pt`。
 
+*   *注：模型权重文件较大，未提交至 Git 历史中，需按上述方式自行准备。*
 
 
 
@@ -47,6 +48,7 @@
 
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
+
 
 
 **实际运行命令：**
@@ -76,9 +78,9 @@ py -3.12 infer.py --model weights/best.pt --source videos/test.mp4 --output outp
 
 ## 6. 结果展示
 
-![推理结果截图](https://raw.githubusercontent.com/wssxh666/yolo-armor-inference/main/demo.png)
+![推理结果截图](./demo.png)
 
-*图注：检测到装甲板，显示类别 B3，置信度 0.70 / 0.54，且红色、黄色、蓝色、绿色4个关键点清晰标出。
+图注：检测到装甲板，显示类别 B3，置信度 0.70 / 0.54，且红色、黄色、蓝色、绿色4个关键点清晰标出。
 
 
 
@@ -90,7 +92,7 @@ py -3.12 infer.py --model weights/best.pt --source videos/test.mp4 --output outp
 
 1.  **漏检/误检现象**：在视频某些帧中，由于运动模糊或光线变化，出现了短暂的目标漏检，以及置信度较低的误检（如截图中的 0.54）。这属于模型在真实场景下的正常表现，已如实保留结果并记录。
 
-2.  **OpenCV视频编码兼容性问题**：最初使用 `mp4v` 编码器时，Windows下生成的 `mp4` 视频无法正常播放。**处理方法**：将代码中的编码器改为 `XVID`，输出后缀改为 `.avi`，成功生成了能正常播放的 `result.avi`。
+2.  **OpenCV视频编码兼容性问题**：最初使用 `mp4v` 编码器时，Windows下生成的 `mp4` 视频无法正常播放。\*\*处理方法\*\*：将代码中的编码器改为 `XVID`，输出后缀改为 `.avi`，成功生成了能正常播放的 `result.avi`。
 
 3.  **全片无有效检测的排查过程**：如果全片没有有效检测，应依次检查权重文件是否正确加载、视频输入是否正常读取、推理参数是否设置过严。本次作业通过增加 `\[DEBUG]` 打印信息，成功排查了初始路径不对导致的问题。
 
@@ -112,4 +114,11 @@ py -3.12 infer.py --model weights/best.pt --source videos/test.mp4 --output outp
 
 py -3.12 export*_model.py
 
+```
+## 9. ONNX 模型推理验证
+本项目已成功加载导出后的 ONNX 格式模型（`weights/best.onnx`）并完成了推理验证。测试视频与上一阶段相同，成功输出了包含检测框、类别及置信度的结果视频，保存在 `output/result_onnx.avi`。
+
+**运行命令**：
+```bash
+py -3.12 infer.py --model weights/best.onnx --source videos/test.mp4 --output output/result_onnx.avi
 ```
