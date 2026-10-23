@@ -135,3 +135,16 @@ py -3.12 infer.py --model weights/best.onnx --source videos/test.mp4 --output ou
 
 **差异分析**：
 本次测试在纯 CPU 环境下进行，输入尺寸均为 640x640。通过对比发现，导出的 ONNX 模型在 CPU 上的推理速度比原版 PyTorch (.pt) 模型（更快/更慢），且文件体积（更小/略大）。这主要是因为 ONNX Runtime 引擎针对 CPU 架构进行了深度的算子融合与计算图优化。两者的检测目标数量（一致/有微小差异），整体精度几乎无损。
+# YOLO 装甲板模型推理与格式转换
+
+## 1. 本次使用的 YOLO 模型版本
+本项目基于 **YOLO26n** 装甲板模型（初始权重为 `best.pt`），编写了 Python 推理与导出脚本。该模型能够对输入视频中的装甲板进行目标检测，并预测每个目标的 4 个关键点。
+
+## 2. 导出的模型格式及导出方法
+*   **导出格式**：本项目将原始的 `.pt` 模型导出为了 **ONNX** 和 **TorchScript** 格式，以实现跨平台的高效部署。
+*   **导出方法**：编写了专门的导出脚本 `export_model.py`。核心代码如下：
+    ```python
+    from ultralytics import YOLO
+    model = YOLO("weights/best.pt")
+    model.export(format="onnx")
+    model.export(format="torchscript")
