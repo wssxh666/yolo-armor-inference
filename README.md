@@ -62,6 +62,7 @@ py -3.12 infer.py
 # 或者通过命令行参数指定路径（模型路径、视频路径、输出位置均可自定义）
 
 py -3.12 infer.py --model weights/best.pt --source videos/test.mp4 --output output/result.avi
+```
 
 ## 5. 视频拍摄说明
 
