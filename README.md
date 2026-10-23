@@ -76,7 +76,7 @@ py -3.12 infer.py --model weights/best.pt --source videos/test.mp4 --output outp
 
 ## 6. 结果展示
 
-![推理结果截图](./demo.png)
+![推理结果截图](https://raw.githubusercontent.com/wssxh666/yolo-armor-inference/main/demo.png)
 
 *图注：检测到装甲板，显示类别 B3，置信度 0.70 / 0.54，且红色、黄色、蓝色、绿色4个关键点清晰标出。
 
